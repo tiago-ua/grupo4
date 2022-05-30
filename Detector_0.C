@@ -1,31 +1,36 @@
-void 30_maio(){
+void Detector_0(){
 
-TFile * ficheiro= new TFile("AmberTarget_Run_0.root","READ");
-TFile * ficheiroGravar= new TFile("Analise.root","RECREATE");
-TTree * dados= (TTree*)  ficheiro -> Get("edep_Per_Event");
-Double_t detector0;
-Double_t detector1;
-Double_t detector2;
-Double_t detector3;
-Double_t Soma;
+	TFile * ficheiro= new TFile("AmberTarget_Run_0.root","READ");
+	TFile * ficheiroGravar= new TFile("Analise.root","RECREATE");
+	TTree * dados= (TTree*)  ficheiro -> Get("tracksData");
 
-dados->SetBranchAddress("detector0",&detector0);
-dados->SetBranchAddress("detector1",&detector1);
-dados->SetBranchAddress("detector2",&detector2);
-dados->SetBranchAddress("detector3",&detector3);
+	Double_t detector0;
+	Double_t detector1;
+	Double_t detector2;
+	Double_t detector3;
+	Int_t PDG;
 
+	Double_t Soma;
 
-Long64_t  N = dados-> GetEntries();
-TTree* newTree = new TTree("newTree","newTree");			//Completar
-newTree -> Branch("Soma", &Soma, "Soma /D");
+	dados->SetBranchAddress("EdepDet0_keV",&detector0);
+	dados->SetBranchAddress("EdepDet1_keV",&detector1);
+	dados->SetBranchAddress("EdepDet2_keV",&detector2);
+	dados->SetBranchAddress("EdepDet3_keV",&detector3);
+	dados->SetBranchAddress("particlePDG",&PDG);
 
-for (Int_t i=0; i< N; i++){
-	dados->GetEntry(i);
-	Soma=detector0+detector1+detector2+detector3;
-	newTree -> Fill();
-	
-} 
+	Long64_t  N = dados-> GetEntries();
 
-newTree -> Write();
+	TTree* newTree = new TTree("newTree","newTree");
+	newTree -> Branch("Soma", &Soma, "Soma/D");
+	newTree->Branch("particlePDG",&PDG,"PGD/I");
+
+	for (Int_t i=0; i< N; i++){
+		dados->GetEntry(i);
+		Soma=detector0+detector1+detector2+detector3;
+		newTree -> Fill();
+		
+	} 
+	//newTree->Scan();
+	newTree -> Write();
 
 }
